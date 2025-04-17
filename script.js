@@ -63,7 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (nextSlide) {
               nextSlide.scrollIntoView({ behavior: 'smooth' });
             }
-          }, 500); // Small delay to let user see the answer
+          }, 500);
         }
       });
     }
@@ -76,6 +76,38 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 });
+
+// Function to save results to Google Sheets
+async function saveResults(username) {
+  try {
+    // Simple test data
+    const testData = {
+      username: username,
+      timestamp: new Date().toISOString(),
+      test: "Hello from quiz"
+    };
+
+    const scriptUrl = 'https://script.google.com/macros/s/AKfycbxZaHt_tSbiGE9Z87Tc2NCP_1bkP93QHtwd7BjMqGq7pYeVGOaDMF9Xg9LC1pfH8nMsfg/exec';
+    
+    const response = await fetch(scriptUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(testData)
+    });
+
+    if (response.ok) {
+      const result = await response.json();
+      console.log('Response from server:', result);
+      showResults(username);
+    } else {
+      console.error('Server response not OK:', response);
+    }
+  } catch (error) {
+    console.error('Error saving results:', error);
+  }
+}
 
 // Function to display results on the page
 function showResults(username) {
@@ -115,42 +147,5 @@ function showResults(username) {
     resultsSlide.scrollIntoView({ behavior: 'smooth' });
   } catch (error) {
     console.error('Error showing results:', error);
-  }
-}
-
-// Function to save results to Google Sheets
-async function saveResults(username) {
-  try {
-    // Format the data for Google Sheets
-    const data = {
-      username: username,
-      timestamp: new Date().toISOString(),
-      ...userResponses
-    };
-
-    // Replace with your Google Apps Script Web App URL
-    const scriptUrl = 'https://script.google.com/macros/s/AKfycbxnBekdTXvHsLpFD6iBSRE7-mJRYH2d383_xN08eNI0jOxb15FkZZ26WXlu6Foe_KCh8w/exec';
-    
-    const response = await fetch(scriptUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data)
-    });
-
-    if (response.ok) {
-      const result = await response.json();
-      if (result.result === 'success') {
-        showResults(username);
-      } else {
-        throw new Error(result.error || 'Failed to save results');
-      }
-    } else {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-  } catch (error) {
-    console.error('Error saving results:', error);
-    alert(`Error saving results: ${error.message}`);
   }
 } 
