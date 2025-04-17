@@ -129,7 +129,7 @@ async function saveResults(username) {
     };
 
     // Replace with your Google Apps Script Web App URL
-    const scriptUrl = 'https://script.google.com/macros/s/AKfycbxZaHt_tSbiGE9Z87Tc2NCP_1bkP93QHtwd7BjMqGq7pYeVGOaDMF9Xg9LC1pfH8nMsfg/exec';
+    const scriptUrl = 'https://script.google.com/macros/s/AKfycbxnBekdTXvHsLpFD6iBSRE7-mJRYH2d383_xN08eNI0jOxb15FkZZ26WXlu6Foe_KCh8w/exec';
     
     const response = await fetch(scriptUrl, {
       method: 'POST',
