@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Handle saving results
   saveResultsBtn.addEventListener('click', () => {
     if (userName) {
-      showResults(userName);
+      saveResults(userName);
     }
   });
 });
@@ -115,5 +115,42 @@ function showResults(username) {
     resultsSlide.scrollIntoView({ behavior: 'smooth' });
   } catch (error) {
     console.error('Error showing results:', error);
+  }
+}
+
+// Function to save results to Google Sheets
+async function saveResults(username) {
+  try {
+    // Format the data for Google Sheets
+    const data = {
+      username: username,
+      timestamp: new Date().toISOString(),
+      ...userResponses
+    };
+
+    // Replace with your Google Apps Script Web App URL
+    const scriptUrl = 'https://script.google.com/macros/s/AKfycbxZaHt_tSbiGE9Z87Tc2NCP_1bkP93QHtwd7BjMqGq7pYeVGOaDMF9Xg9LC1pfH8nMsfg/exec';
+    
+    const response = await fetch(scriptUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data)
+    });
+
+    if (response.ok) {
+      const result = await response.json();
+      if (result.result === 'success') {
+        showResults(username);
+      } else {
+        throw new Error(result.error || 'Failed to save results');
+      }
+    } else {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+  } catch (error) {
+    console.error('Error saving results:', error);
+    alert(`Error saving results: ${error.message}`);
   }
 } 
