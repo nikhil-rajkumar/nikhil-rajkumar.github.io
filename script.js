@@ -47,18 +47,25 @@ document.addEventListener('DOMContentLoaded', () => {
       
       const response = await fetch(scriptUrl, {
         method: 'POST',
-        mode: 'no-cors',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(data)
       });
 
-      // Since we're using no-cors mode, we can't read the response
-      // But we can assume success if we get here
-      showMessage('Your responses have been saved successfully!', 'success');
-      quizForm.reset();
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const responseData = await response.json();
+      console.log('Response data:', responseData);
       
+      if (responseData.result === 'success') {
+        showMessage('Your responses have been saved successfully!', 'success');
+        quizForm.reset();
+      } else {
+        throw new Error(responseData.error || 'Failed to save responses');
+      }
     } catch (error) {
       console.error('Error saving results:', error);
       showMessage('There was an error saving your responses. Please try again.', 'error');
