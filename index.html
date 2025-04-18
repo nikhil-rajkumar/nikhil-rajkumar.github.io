@@ -1,254 +1,90 @@
-<!DOCTYPE HTML>
-<html>
-  <head>
-    <title>History Trivia Quiz</title>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="Test your knowledge of history with this interactive quiz">
-    <style>
-      .hn-bold {
-        font-family: "HelveticaNeueBold",
-          "HelveticaNeue-Bold",
-          "Helvetica Neue Bold",
-          "HelveticaNeue",
-          "Helvetica Neue",
-          "TeXGyreHerosBold",
-          "Helvetica",
-          "Tahoma",
-          "Geneva",
-          "Arial",
-          sans-serif;
-        font-weight: 600;
-        font-stretch: normal;
-      }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz App</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to the Quiz!</h1>
+        <form id="quizForm">
+            <div class="form-group">
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" required>
+            </div>
 
-      .hn-medium {
-        font-family: "HelveticaNeueMedium",
-          "HelveticaNeue-Medium",
-          "Helvetica Neue Medium",
-          "HelveticaNeue",
-          "Helvetica Neue",
-          "TeXGyreHerosRegular",
-          "Helvetica",
-          "Tahoma",
-          "Geneva",
-          "Arial",
-          sans-serif;
-        font-weight: 500;
-        font-stretch: normal;
-      }
+            <div class="question">
+                <h3>Question 1: What is your favorite programming language?</h3>
+                <div class="options">
+                    <label>
+                        <input type="radio" name="q1" value="JavaScript" required>
+                        JavaScript
+                    </label>
+                    <label>
+                        <input type="radio" name="q1" value="Python">
+                        Python
+                    </label>
+                    <label>
+                        <input type="radio" name="q1" value="Java">
+                        Java
+                    </label>
+                    <label>
+                        <input type="radio" name="q1" value="Other">
+                        Other
+                    </label>
+                </div>
+            </div>
 
-      .hn-regular {
-        font-family: "HelveticaNeue",
-          "Helvetica Neue",
-          "HelveticaNeueRoman",
-          "HelveticaNeue-Roman",
-          "Helvetica Neue Roman",
-          "TeXGyreHerosRegular",
-          "Helvetica",
-          "Tahoma",
-          "Geneva",
-          "Arial",
-          sans-serif;
-        font-weight: 400;
-        font-stretch: normal;
-      }
+            <div class="question">
+                <h3>Question 2: How long have you been programming?</h3>
+                <div class="options">
+                    <label>
+                        <input type="radio" name="q2" value="Less than 1 year" required>
+                        Less than 1 year
+                    </label>
+                    <label>
+                        <input type="radio" name="q2" value="1-3 years">
+                        1-3 years
+                    </label>
+                    <label>
+                        <input type="radio" name="q2" value="3-5 years">
+                        3-5 years
+                    </label>
+                    <label>
+                        <input type="radio" name="q2" value="More than 5 years">
+                        More than 5 years
+                    </label>
+                </div>
+            </div>
 
-      body {
-        display: flex;
-        flex-direction: column;
-        background-color: black;
-        color: white;
-        margin: 0;
-        padding: 0;
-        font-family: "HelveticaNeueMedium",
-          "HelveticaNeue-Medium",
-          "Helvetica Neue Medium",
-          "HelveticaNeue",
-          "Helvetica Neue",
-          'TeXGyreHerosRegular',
-          "Helvetica",
-          "Tahoma",
-          "Geneva",
-          "Arial",
-          sans-serif;
-      }
+            <div class="question">
+                <h3>Question 3: What is your preferred development environment?</h3>
+                <div class="options">
+                    <label>
+                        <input type="radio" name="q3" value="VS Code" required>
+                        VS Code
+                    </label>
+                    <label>
+                        <input type="radio" name="q3" value="IntelliJ">
+                        IntelliJ
+                    </label>
+                    <label>
+                        <input type="radio" name="q3" value="Sublime Text">
+                        Sublime Text
+                    </label>
+                    <label>
+                        <input type="radio" name="q3" value="Other">
+                        Other
+                    </label>
+                </div>
+            </div>
 
-      .slide {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        text-align: center;
-        height: 60vw;
-        border-bottom: 0.5vw solid #333;
-        padding: 2vw;
-      }
-
-      .slide:last-of-type {
-        border: none;
-      }
-
-      .f7 {
-        font-size: 7vw;
-      }
-
-      .f5 {
-        font-size: 5.5vw;
-      }
-
-      .f3 {
-        font-size: 3vw;
-      }
-
-      .f2 {
-        font-size: 2vw;
-      }
-
-      .question-container {
-        max-width: 80vw;
-        margin: 0 auto;
-      }
-
-      .options-container {
-        margin-top: 3vw;
-        text-align: left;
-      }
-
-      .option {
-        margin: 2vw 0;
-        padding: 1vw;
-        border: 1px solid #333;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: background-color 0.3s;
-      }
-
-      .option:hover {
-        background-color: #333;
-      }
-
-      .option input[type="radio"] {
-        margin-right: 2vw;
-      }
-
-      .answer-reveal {
-        margin-top: 3vw;
-        padding: 2vw;
-        background-color: #333;
-        border-radius: 5px;
-        display: none;
-      }
-
-      .fact {
-        font-style: italic;
-        margin-top: 2vw;
-      }
-
-      .submit-btn {
-        margin-top: 3vw;
-        padding: 2vw 4vw;
-        background-color: #333;
-        border: none;
-        color: white;
-        cursor: pointer;
-        border-radius: 5px;
-        font-size: 2vw;
-      }
-
-      .submit-btn:hover {
-        background-color: #444;
-      }
-
-      .username-input {
-        margin-top: 3vw;
-        padding: 1vw;
-        font-size: 2vw;
-        width: 50vw;
-        text-align: center;
-        background-color: #333;
-        border: none;
-        color: white;
-        border-radius: 5px;
-      }
-    </style>
-  </head>
-
-  <body>
-    <div class="slide" id="login-slide">
-      <section class="slide-content">
-        <p class="f7 hn-medium">History Trivia Quiz</p>
-        <p class="f3 hn-regular">Please enter your name to begin</p>
-        <input type="text" id="user-name" class="username-input" placeholder="Your name">
-        <button id="start-quiz" class="submit-btn">Start Quiz</button>
-      </section>
+            <button type="submit" class="submit-btn">Submit Quiz</button>
+        </form>
+        <div id="responseMessage"></div>
     </div>
-
-    <div class="slide" id="quiz-slide" style="display: none;">
-      <section class="slide-content">
-        <p class="f7 hn-medium">History Trivia Quiz</p>
-        <p class="f3 hn-regular">Test your knowledge of historical events and figures</p>
-      </section>
-    </div>
-
-    <div class="slide">
-      <section class="slide-content question-container">
-        <p class="f5 hn-medium">Question 1</p>
-        <p class="f3 hn-regular">In what year did the Berlin Wall fall?</p>
-        <div class="options-container">
-          <label class="option">
-            <input type="radio" name="q1" value="1987"> 1987
-          </label>
-          <label class="option">
-            <input type="radio" name="q1" value="1989"> 1989
-          </label>
-          <label class="option">
-            <input type="radio" name="q1" value="1991"> 1991
-          </label>
-          <label class="option">
-            <input type="radio" name="q1" value="1993"> 1993
-          </label>
-        </div>
-        <div class="answer-reveal">
-          <p class="f3 hn-medium">Correct Answer: 1989</p>
-          <p class="f2 hn-regular fact">The Berlin Wall fell on November 9, 1989, marking the beginning of the end of the Cold War and the reunification of Germany.</p>
-        </div>
-        <button class="submit-btn">Submit Answer</button>
-      </section>
-    </div>
-
-    <div class="slide">
-      <section class="slide-content question-container">
-        <p class="f5 hn-medium">Question 2</p>
-        <p class="f3 hn-regular">Who was the first woman to win a Nobel Prize?</p>
-        <div class="options-container">
-          <label class="option">
-            <input type="radio" name="q2" value="Marie Curie"> Marie Curie
-          </label>
-          <label class="option">
-            <input type="radio" name="q2" value="Rosalind Franklin"> Rosalind Franklin
-          </label>
-          <label class="option">
-            <input type="radio" name="q2" value="Jane Goodall"> Jane Goodall
-          </label>
-          <label class="option">
-            <input type="radio" name="q2" value="Dorothy Hodgkin"> Dorothy Hodgkin
-          </label>
-        </div>
-        <div class="answer-reveal">
-          <p class="f3 hn-medium">Correct Answer: Marie Curie</p>
-          <p class="f2 hn-regular fact">Marie Curie won the Nobel Prize in Physics in 1903 for her work on radioactivity, and later won the Nobel Prize in Chemistry in 1911.</p>
-        </div>
-        <button class="submit-btn">Submit Answer</button>
-      </section>
-    </div>
-
-    <div class="slide">
-      <section class="slide-content">
-        <p class="f5 hn-medium">Thank you for completing the quiz!</p>
-        <button class="submit-btn" id="save-results">Show Results</button>
-      </section>
-    </div>
-
     <script src="script.js"></script>
-  </body>
+</body>
 </html> 

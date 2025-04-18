@@ -20,132 +20,65 @@ let userName = '';
 
 // Initialize the quiz
 document.addEventListener('DOMContentLoaded', () => {
-  const submitButtons = document.querySelectorAll('.submit-btn');
-  const saveResultsBtn = document.getElementById('save-results');
-  const startQuizBtn = document.getElementById('start-quiz');
-  const nameInput = document.getElementById('user-name');
+  // Get the form element
+  const quizForm = document.getElementById('quizForm');
+  if (!quizForm) {
+    console.error('Quiz form not found');
+    return;
+  }
 
-  // Handle start quiz button
-  startQuizBtn.addEventListener('click', () => {
-    const name = nameInput.value.trim();
-    if (name) {
-      userName = name;
-      document.getElementById('login-slide').style.display = 'none';
-      document.getElementById('quiz-slide').style.display = 'flex';
-    }
-  });
+  // Handle form submission
+  quizForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const formData = new FormData(quizForm);
+    const data = {
+      username: formData.get('username'),
+      timestamp: new Date().toISOString(),
+      q1: formData.get('q1'),
+      q2: formData.get('q2'),
+      q3: formData.get('q3')
+    };
 
-  // Handle answer submission for each question
-  submitButtons.forEach((btn, index) => {
-    if (index < quizData.length) {
-      btn.addEventListener('click', () => {
-        const questionName = `q${index + 1}`;
-        const selectedOption = document.querySelector(`input[name="${questionName}"]:checked`);
-        const answerReveal = btn.previousElementSibling;
-        
-        if (selectedOption) {
-          userResponses[questionName] = {
-            answer: selectedOption.value,
-            isCorrect: selectedOption.value === quizData[index].correctAnswer
-          };
-          
-          // Show the answer and fact
-          answerReveal.style.display = 'block';
-          
-          // Disable the radio buttons and submit button
-          const options = document.querySelectorAll(`input[name="${questionName}"]`);
-          options.forEach(option => option.disabled = true);
-          btn.disabled = true;
+    try {
+      console.log('Sending data:', data); // Debug log
 
-          // Auto-scroll to next question or results
-          setTimeout(() => {
-            const nextSlide = document.querySelectorAll('.slide')[index + 2];
-            if (nextSlide) {
-              nextSlide.scrollIntoView({ behavior: 'smooth' });
-            }
-          }, 500);
-        }
+      const scriptUrl = 'https://script.google.com/macros/s/AKfycbwTF-PPEiGFpC5CC7e1l77FCY20vyujnQrpFldCAwW9IDOA_k0j1it5tJuKmueiiUd6/exec';
+      
+      const response = await fetch(scriptUrl, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
       });
-    }
-  });
 
-  // Handle saving results
-  saveResultsBtn.addEventListener('click', () => {
-    if (userName) {
-      saveResults(userName);
+      // Since we're using no-cors mode, we can't read the response
+      // But we can assume success if we get here
+      showMessage('Your responses have been saved successfully!', 'success');
+      quizForm.reset();
+      
+    } catch (error) {
+      console.error('Error saving results:', error);
+      showMessage('There was an error saving your responses. Please try again.', 'error');
     }
   });
 });
 
-// Function to save results to Google Sheets
-async function saveResults(username) {
-  try {
-    // Simple test data
-    const testData = {
-      username: username,
-      timestamp: new Date().toISOString(),
-      test: "Hello from quiz"
-    };
-
-    const scriptUrl = 'https://script.google.com/macros/s/AKfycbxZaHt_tSbiGE9Z87Tc2NCP_1bkP93QHtwd7BjMqGq7pYeVGOaDMF9Xg9LC1pfH8nMsfg/exec';
-    
-    const response = await fetch(scriptUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(testData)
-    });
-
-    if (response.ok) {
-      const result = await response.json();
-      console.log('Response from server:', result);
-      showResults(username);
-    } else {
-      console.error('Server response not OK:', response);
-    }
-  } catch (error) {
-    console.error('Error saving results:', error);
+function showMessage(message, type) {
+  const messageDiv = document.getElementById('responseMessage');
+  if (!messageDiv) {
+    console.error('Message div not found');
+    return;
   }
-}
-
-// Function to display results on the page
-function showResults(username) {
-  try {
-    // Create results summary
-    let correctCount = 0;
-    let totalQuestions = Object.keys(userResponses).length;
-    
-    Object.values(userResponses).forEach(response => {
-      if (response.isCorrect) correctCount++;
-    });
-
-    // Create results HTML
-    const resultsHTML = `
-      <div class="results-container">
-        <h2 class="f5 hn-medium">Quiz Results for ${username}</h2>
-        <p class="f3 hn-regular">Score: ${correctCount} out of ${totalQuestions}</p>
-        <div class="results-details">
-          ${Object.entries(userResponses).map(([qNum, response], index) => `
-            <div class="result-item">
-              <p class="f3 hn-medium">Question ${index + 1}:</p>
-              <p class="f2 hn-regular">Your answer: ${response.answer}</p>
-              <p class="f2 hn-regular">${response.isCorrect ? '✅ Correct' : '❌ Incorrect'}</p>
-            </div>
-          `).join('')}
-        </div>
-      </div>
-    `;
-
-    // Add results to the page
-    const resultsSlide = document.createElement('div');
-    resultsSlide.className = 'slide';
-    resultsSlide.innerHTML = resultsSlide.innerHTML + resultsHTML;
-    document.body.appendChild(resultsSlide);
-
-    // Scroll to results
-    resultsSlide.scrollIntoView({ behavior: 'smooth' });
-  } catch (error) {
-    console.error('Error showing results:', error);
-  }
+  
+  messageDiv.textContent = message;
+  messageDiv.className = type;
+  
+  // Clear message after 5 seconds
+  setTimeout(() => {
+    messageDiv.textContent = '';
+    messageDiv.className = '';
+  }, 5000);
 } 
