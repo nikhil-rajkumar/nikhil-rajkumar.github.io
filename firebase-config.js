@@ -2,7 +2,7 @@
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
     apiKey: "AIzaSyBmvjbJg6iPA2Cfp7hqHoHASY36Q2NOi3M",
-    authDomain: "history-trivia-41187.firebaseapp.com",
+    authDomain: "https://history-trivia-41187.firebaseio.com",
     projectId: "history-trivia-41187",
     storageBucket: "history-trivia-41187.firebasestorage.app",
     messagingSenderId: "240138574064",
