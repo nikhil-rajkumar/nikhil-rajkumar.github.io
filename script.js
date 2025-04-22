@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Save results button click handler
-    saveResultsButton.addEventListener('click', async () => {
+    saveResultsButton.addEventListener('click', () => {
         const userName = userNameInput.value.trim();
         if (!userName) {
             alert('Please enter your name');
@@ -69,66 +69,28 @@ document.addEventListener('DOMContentLoaded', () => {
         userResponses.name = userName;
         
         try {
-            // First, get the current content of the file
-            const getResponse = await fetch('https://api.github.com/repos/nikhil-rajkumar/nikhil-rajkumar.github.io/contents/data/responses.json', {
-                headers: {
-                    'Authorization': 'token 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',
-                    'Accept': 'application/vnd.github.v3+json'
-                }
-            });
-
-            if (!getResponse.ok) {
-                const errorData = await getResponse.json();
-                console.error('GitHub API Error:', errorData);
-                throw new Error(`Failed to fetch existing data: ${getResponse.status} ${getResponse.statusText}`);
-            }
-
-            const existingData = await getResponse.json();
-            let currentContent;
-            
-            try {
-                currentContent = JSON.parse(atob(existingData.content));
-            } catch (e) {
-                console.error('Error parsing existing content:', e);
-                currentContent = { responses: [] };
-            }
-            
-            // Add the new response to the existing data
-            if (!currentContent.responses) {
-                currentContent.responses = [];
-            }
-            currentContent.responses.push(userResponses);
-
-            // Update the file
-            const updateResponse = await fetch('https://api.github.com/repos/nikhil-rajkumar/nikhil-rajkumar.github.io/contents/data/responses.json', {
-                method: 'PUT',
-                headers: {
-                    'Authorization': 'token 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',
-                    'Accept': 'application/vnd.github.v3+json',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    message: `Add response from ${userName}`,
-                    content: btoa(JSON.stringify(currentContent, null, 2)),
-                    sha: existingData.sha,
-                    branch: 'main'
+            // Save to Firebase
+            const responsesRef = database.ref('responses');
+            responsesRef.push(userResponses)
+                .then(() => {
+                    // Calculate score
+                    const score = userResponses.answers.filter(answer => answer.isCorrect).length;
+                    const total = userResponses.answers.length;
+                    
+                    alert(`Your results have been saved!\nScore: ${score}/${total} correct answers`);
+                    
+                    window.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
+                    });
                 })
-            });
-
-            if (!updateResponse.ok) {
-                const errorData = await updateResponse.json();
-                console.error('GitHub API Update Error:', errorData);
-                throw new Error(`Failed to save results: ${updateResponse.status} ${updateResponse.statusText}`);
-            }
-
-            alert('Your results have been saved!');
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
+                .catch((error) => {
+                    console.error('Error saving to Firebase:', error);
+                    alert('There was an error saving your results. Please try again later.');
+                });
         } catch (error) {
-            console.error('Error saving results:', error);
-            alert(`There was an error saving your results: ${error.message}`);
+            console.error('Error:', error);
+            alert('There was an error saving your results. Please try again later.');
         }
     });
 
