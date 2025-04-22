@@ -72,18 +72,31 @@ document.addEventListener('DOMContentLoaded', () => {
             // First, get the current content of the file
             const getResponse = await fetch('https://api.github.com/repos/nikhil-rajkumar/nikhil-rajkumar.github.io/contents/data/responses.json', {
                 headers: {
-                    'Authorization': 'token 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'
+                    'Authorization': 'token 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',
+                    'Accept': 'application/vnd.github.v3+json'
                 }
             });
 
             if (!getResponse.ok) {
-                throw new Error('Failed to fetch existing data');
+                const errorData = await getResponse.json();
+                console.error('GitHub API Error:', errorData);
+                throw new Error(`Failed to fetch existing data: ${getResponse.status} ${getResponse.statusText}`);
             }
 
             const existingData = await getResponse.json();
-            const currentContent = JSON.parse(atob(existingData.content));
+            let currentContent;
+            
+            try {
+                currentContent = JSON.parse(atob(existingData.content));
+            } catch (e) {
+                console.error('Error parsing existing content:', e);
+                currentContent = { responses: [] };
+            }
             
             // Add the new response to the existing data
+            if (!currentContent.responses) {
+                currentContent.responses = [];
+            }
             currentContent.responses.push(userResponses);
 
             // Update the file
@@ -91,6 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 method: 'PUT',
                 headers: {
                     'Authorization': 'token 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',
+                    'Accept': 'application/vnd.github.v3+json',
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
@@ -101,18 +115,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 })
             });
 
-            if (updateResponse.ok) {
-                alert('Your results have been saved!');
-                window.scrollTo({
-                    top: 0,
-                    behavior: 'smooth'
-                });
-            } else {
-                throw new Error('Failed to save results');
+            if (!updateResponse.ok) {
+                const errorData = await updateResponse.json();
+                console.error('GitHub API Update Error:', errorData);
+                throw new Error(`Failed to save results: ${updateResponse.status} ${updateResponse.statusText}`);
             }
+
+            alert('Your results have been saved!');
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
         } catch (error) {
             console.error('Error saving results:', error);
-            alert('There was an error saving your results. Please try again later.');
+            alert(`There was an error saving your results: ${error.message}`);
         }
     });
 
